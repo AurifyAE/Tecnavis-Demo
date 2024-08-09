@@ -1,4 +1,11 @@
 // import { readSpreadValues } from '../core/spotrateDB.js';
+const socket = io('https://test-server-9sbj.onrender.com', {
+    query: { secret: 'aurify@123' }, // Pass secret key as query parameter
+});
+socket.on("connect", () => {
+    console.log("Connected to WebSocket server");
+    socket.emit("request-data", ["GOLD", "SILVER"]);
+});
 import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore.js";
 import { app } from '../../../config/db.js';
 
@@ -6,18 +13,11 @@ const script = document.createElement('script');
 script.src = 'https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js';
 document.head.appendChild(script);
 
-const socket = io('https://capital-server-sl0q.onrender.com', {
-    query: { secret: 'aurify@123' }, // Pass secret key as query parameter
-});
 
 const firestore = getFirestore(app)
 
+
 setInterval(fetchData1, 500);
-
-// setInterval(() => {
-//     blinker()
-// }, 500)
-
 fetchData()
 showTable();
 
@@ -30,13 +30,14 @@ const API_KEY = 'goldapi-fbqpmirloto20zi-io'
 
 async function fetchData() {
     socket.on('market-data', (data) => {
-        // console.log('Received gold value:', data);
-
-        if (data && data.type && data.data) {
-            if (data.type === "gold") {
-                goldData = data.data;
-            } else if (data.type === "silver") {
-                silverData = data.data;
+        console.log('Received gold value:', data);
+         
+        if (data && data.symbol) {
+            if (data.symbol === "Gold") {
+                goldData = data;
+            } else if (data.symbol === "Silver") {
+                console.log('dd')
+                silverData = data;
             }
         } else {
             console.warn("Received malformed market data:", data);
