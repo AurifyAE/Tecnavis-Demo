@@ -1,11 +1,4 @@
 // import { readSpreadValues } from '../core/spotrateDB.js';
-const socket = io('https://test-server-9sbj.onrender.com', {
-    query: { secret: 'aurify@123' }, // Pass secret key as query parameter
-});
-socket.on("connect", () => {
-    console.log("Connected to WebSocket server");
-    socket.emit("request-data", ["GOLD", "SILVER"]);
-});
 import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore.js";
 import { app } from '../../../config/db.js';
 
@@ -13,8 +6,21 @@ const script = document.createElement('script');
 script.src = 'https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js';
 document.head.appendChild(script);
 
+const socket = io('https://test-server-9sbj.onrender.com', {
+    query: { secret: 'aurify@123' }, // Pass secret key as query parameter
+});
 
 const firestore = getFirestore(app)
+socket.on("connect", () => {
+    console.log("Connected to WebSocket server");
+    requestMarketData(["GOLD", "SILVER"]);
+});
+
+// Request market data based on symbols
+function requestMarketData(symbols) {
+    socket.emit("request-data", symbols);
+}
+
 
 
 setInterval(fetchData1, 500);
@@ -23,8 +29,9 @@ showTable();
 
 
 let askSpread, bidSpread, goldValue, silverBidSpread, silverAskSpread, goldBuy, goldSell, 
-silverBuy, silverSell, silverValue, goldValueUSD, goldHigh, goldLow, goldData, silverData, silverLow, silverHigh;
-
+silverBuy, silverSell, silverValue, goldValueUSD, goldHigh, goldLow, silverLow, silverHigh;
+let goldData = {}
+let silverData = {}
 // Gold API KEY
 const API_KEY = 'goldapi-fbqpmirloto20zi-io'
 
@@ -35,9 +42,10 @@ async function fetchData() {
         if (data && data.symbol) {
             if (data.symbol === "Gold") {
                 goldData = data;
+                // updateGoldUI();
             } else if (data.symbol === "Silver") {
-                console.log('dd')
                 silverData = data;
+                // updateSilverUI();
             }
         } else {
             console.warn("Received malformed market data:", data);
