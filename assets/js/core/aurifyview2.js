@@ -1,15 +1,15 @@
 // import { readSpreadValues } from '../core/spotrateDB.js';
 import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore.js";
 import { app } from '../../../config/db.js';
-import {ACCESS_KEY,SERVER_KEY} from '../../../config/key.js'
+import {CONFIG} from '../../../config/key.js'
 
 const script = document.createElement('script');
 script.src = 'https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js';
 document.head.appendChild(script);
 
 
-const socket = io(SERVER_KEY, {
-    query: { secret: ACCESS_KEY }, // Pass secret key as query parameter
+const socket = io(CONFIG.SOCKET_SERVER_URL, {
+    query: { secret: CONFIG.SOCKET_SECRET_KEY }, // Pass secret key as query parameter
 });
 
 const firestore = getFirestore(app)
